@@ -1,0 +1,29 @@
+#ifndef SIZE_H
+#define SIZE_H
+
+#include <QWidget>
+
+namespace Ui {
+class Size;
+}
+
+class Size : public QWidget
+{
+    Q_OBJECT
+    
+public:
+    explicit Size(QWidget *parent = 0);
+    ~Size();
+    
+private slots:
+    void on_width_valueChanged(int arg1);
+    
+    void on_height_valueChanged(int arg1);
+    
+    void on_amount_valueChanged(int arg1);
+    
+private:
+    Ui::Size *ui;
+};
+
+#endif // SIZE_H

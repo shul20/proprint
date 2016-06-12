@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/add-icon.png</file>
+        <file>img/Button-Delete-icon.png</file>
+        <file>img/Button-Refresh-icon.png</file>
+        <file>img/expand_open-icon.png</file>
+        <file>img/check.png</file>
+        <file>img/important-icon.png</file>
+        <file>img/empty-icon.png</file>
+        <file>img/order-icon.png</file>
+        <file>img/pcheck.png</file>
+        <file>img/puncheck.png</file>
+        <file>img/printer.png</file>
+        <file>img/invoice.html</file>
+        <file>img/logo.png</file>
+        <file>img/info.html</file>
+        <file>img/stock-icon.png</file>
+        <file>img/order-archive.icon.png</file>
+        <file>img/payment-icon.png</file>
+        <file>img/search.png</file>
+    </qresource>
+</RCC>

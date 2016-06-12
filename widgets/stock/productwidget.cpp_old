@@ -1,0 +1,259 @@
+#include "productwidget.h"
+#include "ui_productwidget.h"
+#include "models/modelmanager.h"
+#include "utility/process.h"
+#include "models/uniquefilter.h"
+#include "dialogs/productdialog.h"
+
+ProductWidget::ProductWidget(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::ProductWidget), isStock(false), isParam(false),
+    paramF(NULL), stockModel(NULL), stockF(NULL)
+{
+    ui->setupUi(this);
+
+    ProductModel *productModel = ModelManager::getInstance()->getProductModel();
+    productF = new SortFilterModel(this);
+
+    productF->setSourceModel(productModel);
+    connect(productModel, SIGNAL(modelReset()), this, SLOT(productReset()));
+}
+
+ProductWidget::~ProductWidget()
+{
+    delete ui;
+}
+
+void ProductWidget::setup(bool isProduct, bool isStock, bool isParam,
+                          bool isLabel, bool isButton)
+{
+    this->isStock = isStock;
+    this->isParam = isParam;
+    this->isLabel = isLabel;
+
+    ui->product->setHidden(!isProduct);
+    ui->frameStock->setHidden(!isStock);
+    ui->param->setHidden(!isParam);
+    ui->labelStock->setHidden(!isLabel);
+    ui->addProduct->setHidden(!isButton);
+}
+
+void ProductWidget::setRole(int role, QVariant match)
+{
+    if (role == ProductModel::processRole) {
+        productF->compare = &PPLib::checkBit;
+    }
+    productF->setFilterRole(role);
+    ui->product->setModel(productF);
+    productF->setMatchValue(match);
+}
+
+void ProductWidget::on_product_currentIndexChanged(int index)
+{
+    if (index < 0) {
+        return;
+    }
+    Product *product = (Product *) ui->product->itemData(index, PPLib::entityRole).toInt();
+    int stockType = product->fields["product_stock"].toInt();
+
+    if (isStock) {
+        ui->stock->blockSignals(true);
+        frameShow(stockType);
+
+        if (stockModel == NULL) {
+            delete stockModel;
+        }
+        stockModel = new StockModel(this);
+        stockModel->setStock(stockType);
+        QSqlQuery &query = stockModel->getRefreshQuery();
+        query.prepare(Stock::byProductQuery);
+        query.bindValue(":id", product->getId());
+        stockModel->refresh();
+
+        ui->stock->update();
+        if (stockF != NULL) {
+            delete stockF;
+        }
+
+        stockF = new UniqueFilter(this);
+        stockF->setSourceModel(stockModel);
+        stockF->setFilterRole(PPLib::uniqueRole);
+        ui->stock->setModel(stockF);
+        ui->stock->setModelColumn(StockModel::NAME);
+        ui->stock->blockSignals(false);
+
+        if (stockF->rowCount() == 0) {
+            if (paramF != NULL) {
+                delete paramF;
+                paramF = NULL;
+            }
+            ui->param->update();
+
+        } else {
+            on_stock_currentIndexChanged(0);
+        }
+    }
+    emit productChanged(product);
+}
+
+void ProductWidget::on_stock_currentIndexChanged(int index)
+{
+    Stock *stock = (Stock *) ui->stock->itemData(index, PPLib::entityRole).toInt();
+
+    if (isParam) {
+        ui->param->blockSignals(true);
+        if (paramF != NULL) {
+            delete paramF;
+            paramF = NULL;
+        }
+        paramF = new SortFilterModel(this);
+        paramF->setFilterRole(StockModel::fullNameRole);
+        paramF->setSourceModel(stockModel);
+
+        paramF->setMatchValue(QString("%1 %2")
+                              .arg(stock->fields["product_id"].toInt())
+                              .arg(stock->fields["stock_name"].toString()));
+
+        ui->param->setModel(paramF);
+        ui->param->setModelColumn(StockModel::PARAMETR);
+        ui->param->blockSignals(false);
+
+        if (paramF->rowCount() > 0) {
+            on_param_currentIndexChanged(0);
+        }
+    }
+
+    emit stockChanged(stock);
+}
+
+void ProductWidget::on_param_currentIndexChanged(int index)
+{
+    Stock *stock = (Stock *) ui->param->itemData(index, PPLib::entityRole).toInt();
+    emit paramChanged(stock);
+}
+
+
+void ProductWidget::setProduct(int productId)
+{
+    if (productId == 0) {
+        ui->product->setCurrentIndex(0);
+        return;
+    }
+
+    int index = ui->product->findData(productId, PPLib::idRole);
+    if (index < 0) {
+        Product *product = new Product();
+        if (!product->retrive(productId, false)){
+            delete product;
+            return;
+        }
+        productF->setData(QModelIndex(), (int)product, PPLib::addRole);
+        ui->product->setCurrentIndex(ui->product->count() - 1);
+        return;
+    }
+    ui->product->setCurrentIndex(index);
+}
+
+Product *ProductWidget::getProduct() const
+{
+    int index = ui->product->currentIndex();
+    if (index < 0) {
+        return NULL;
+    }
+    return (Product *) ui->product->itemData(index, PPLib::entityRole).toInt();
+}
+
+Stock *ProductWidget::getStock() const
+{
+    int index = ui->stock->currentIndex();
+    if (index < 0) {
+        return NULL;
+    }
+    return (Stock *) ui->stock->itemData(index, PPLib::entityRole).toInt();
+}
+
+void ProductWidget::setStock(int productId, const QString &stockName)
+{
+    setProduct(productId);
+    int index = ui->stock->findText(stockName);
+    ui->stock->setCurrentIndex(index);
+}
+
+void ProductWidget::setParam(int productId, int paramId)
+{
+    setProduct(productId);
+    QModelIndexList items  = stockModel->match(stockModel->index(0,0), PPLib::idRole, paramId);
+    Stock *stock = (Stock *)stockModel->data(items.first(), PPLib::entityRole).toInt();
+
+    setStock(stock->fields["product_id"].toInt(), stock->fields["stock_name"].toString());
+    int index = ui->param->findData(paramId, PPLib::idRole);
+    ui->param->setCurrentIndex(index);
+}
+
+void ProductWidget::disableFocus()
+{
+    ui->product->setFocusPolicy(Qt::NoFocus);
+    ui->stock->setFocusPolicy(Qt::NoFocus);
+    ui->param->setFocusPolicy(Qt::NoFocus);
+}
+
+Stock *ProductWidget::getParam() const
+{
+    int index = ui->param->currentIndex();
+    if (index < 0) {
+        return NULL;
+    }
+    return (Stock *) ui->param->itemData(index, PPLib::entityRole).toInt();
+}
+
+void ProductWidget::setParam(int productId, const QString &stockName, int paramId)
+{
+    setStock(productId, stockName);
+    int index = ui->param->findData(paramId, PPLib::idRole);
+    ui->param->setCurrentIndex(index);
+}
+
+void ProductWidget::setProcess(int processId)
+{
+    productF->setMatchValue(processId);
+}
+
+void ProductWidget::on_addProduct_clicked()
+{
+    int row = ui->product->currentIndex();
+    QModelIndex index = productF->index(row, 0);
+
+    ProductDialog dialog(this);
+    dialog.set(productF, PPLib::addRole, index);
+
+    if (dialog.exec() == QDialog::Accepted){
+        ui->product->setCurrentIndex(productF->rowCount() - 1);
+    }
+}
+
+void ProductWidget::productReset()
+{
+    ui->product->setModel(productF);
+}
+
+void ProductWidget::frameShow(int stockType)
+{
+    if (stockType == Stock::NOSTOCK) {
+        ui->stock->hide();
+        ui->labelStock->hide();
+        ui->param->hide();
+
+
+    } else {
+        ui->stock->show();
+        if (isLabel) {
+            ui->labelStock->show();
+        }
+
+        if (isParam && (stockType != Stock::ITEM)) {
+            ui->param->show();
+        } else {
+            ui->param->hide();
+        }
+    }
+}

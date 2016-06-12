@@ -1,0 +1,29 @@
+#include "size.h"
+#include "ui_size.h"
+
+Size::Size(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::Size)
+{
+    ui->setupUi(this);
+}
+
+Size::~Size()
+{
+    delete ui;
+}
+
+void Size::on_width_valueChanged(int arg1)
+{
+    
+}
+
+void Size::on_height_valueChanged(int arg1)
+{
+    
+}
+
+void Size::on_amount_valueChanged(int arg1)
+{
+    
+}

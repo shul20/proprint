@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ProcessInfoW</class>
+ <widget class="QWidget" name="ProcessInfoW">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>657</width>
+    <height>89</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="margin">
+    <number>2</number>
+   </property>
+   <item>
+    <widget class="QFrame" name="processFrame">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>85</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>85</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="margin">
+       <number>2</number>
+      </property>
+      <item>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="2" column="3">
+         <widget class="QTimeEdit" name="timePredict">
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::NoButtons</enum>
+          </property>
+          <property name="time">
+           <time>
+            <hour>12</hour>
+            <minute>0</minute>
+            <second>0</second>
+           </time>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="5">
+         <widget class="QLineEdit" name="whoEnd">
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {background: rgba(255, 255, 255, 55);}</string>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" rowspan="2">
+         <widget class="QLabel" name="label_12">
+          <property name="styleSheet">
+           <string notr="true">background: transparent</string>
+          </property>
+          <property name="text">
+           <string>Начало</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1" colspan="2">
+         <widget class="QDateEdit" name="datePredict">
+          <property name="styleSheet">
+           <string notr="true">QFrame {background: white}</string>
+          </property>
+          <property name="date">
+           <date>
+            <year>2000</year>
+            <month>1</month>
+            <day>1</day>
+           </date>
+          </property>
+          <property name="calendarPopup">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_20">
+          <property name="styleSheet">
+           <string notr="true">background: transparent</string>
+          </property>
+          <property name="text">
+           <string>Окончание</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="5" rowspan="2">
+         <widget class="QLineEdit" name="whoStart">
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {background: rgba(255, 255, 255, 55);}</string>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="4" rowspan="2">
+         <widget class="QLabel" name="label_14">
+          <property name="styleSheet">
+           <string notr="true">background: transparent</string>
+          </property>
+          <property name="text">
+           <string>Кто</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="4">
+         <widget class="QLabel" name="label_13">
+          <property name="styleSheet">
+           <string notr="true">background: transparent</string>
+          </property>
+          <property name="text">
+           <string>Кто</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_16">
+          <property name="styleSheet">
+           <string notr="true">background: transparent</string>
+          </property>
+          <property name="text">
+           <string>Прогноз</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1" colspan="3">
+         <widget class="QDateTimeEdit" name="dateEnd">
+          <property name="styleSheet">
+           <string notr="true">QDateTimeEdit {background: rgba(255, 255, 255, 55);}</string>
+          </property>
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::NoButtons</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" rowspan="2" colspan="3">
+         <widget class="QDateTimeEdit" name="dateStart">
+          <property name="styleSheet">
+           <string notr="true">QDateTimeEdit {background: rgba(255, 255, 255, 55);}</string>
+          </property>
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::NoButtons</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>10</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="log">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>2</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background: white</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
